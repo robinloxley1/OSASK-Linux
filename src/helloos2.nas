@@ -36,6 +36,8 @@ start:	DB		0xeb, 0x4e, 0x90; OEM number
 		DB		0x0a, 0x0a		; Two RETURNs
 		DB		"Hello, World"
 		DB		0x0a			; Return
+		DB		"Nice Job, Guopeng!"
+		DB		0x0a			; Return
 		DB		0
 len:	EQU		$-start			; Calculate length so far
 		RESB 	0x1fe-len		; Reserve until 0x001fe (510 bytes)
