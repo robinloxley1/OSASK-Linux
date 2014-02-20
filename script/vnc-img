@@ -1,0 +1,35 @@
+#!/bin/bash
+usage="$(basename "$0") [-h] [-i img] [-p port] -- program to display os img through vnc
+
+where:
+	-h show this help text
+	-i set image path
+	-p display port (default: 1)"
+
+[ $# -eq 0 ] && echo "$usage" && exit 1
+
+[[ ! $1 =~ ^-.* ]] && echo "$usage" && exit 1
+
+PORT=1
+while getopts ':hi:p:' option; do
+	case "$option" in
+		h) echo "$usage"
+		   exit
+			 ;;
+		i) IMG=$OPTARG
+       ;;
+    p) PORT=$OPTARG
+       ;;
+		:) printf "missing argument for -%s\n" "$OPTARG" >&2
+			 echo "$usage" >&2
+			 exit 1
+			 ;;
+	 \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+			 exit 1
+   		 ;;
+	esac
+done
+
+echo "image [$IMG] is pushed to vnc display [:$PORT]"
+qemu-system-x86_64 -vnc 0.0.0.0:$PORT -m 32 -no-kvm -fda $IMG
