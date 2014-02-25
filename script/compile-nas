@@ -1,0 +1,49 @@
+#!/bin/bash
+function usage {
+	msg="$(basename "$0") [-h] [-i nas] [-o img] -- program to compile input .nas to .img through nasm
+
+where:
+	-h show this help text
+	-i input assembly code
+  -o output image binary"
+
+	echo "$msg"
+}
+
+[ $# -eq 0 ] && usage && exit 1
+[[ ! $1 =~ ^-.* ]] && usage && exit 1
+
+flag_i=false
+flag_o=false
+
+while getopts ':hi:o:' option; do
+	case "$option" in
+    h) usage
+			 exit
+			 ;;
+		i) INPUT=$OPTARG
+			 flag_i=true
+		   ;;
+		o) OUTPUT=$OPTARG
+       flag_o=true
+		   ;;
+	  :) printf "missing argument for -%s\n" "$OPTARG" >&2
+			 usage >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+		   usage >&2
+       exit 1
+       ;;
+  esac
+done
+
+if [ ! $flag_i = true ] || [ ! $flag_o = true ]; then
+  echo "Both -i and -o are required"
+  exit 1
+fi
+ 
+echo "compiling [$INPUT] to Binary [$OUTPUT]"
+nasm -f elf64 $INPUT -o tmp_nas_img
+tail -c +385 tmp_nas_img > $OUTPUT
+rm tmp_nas_img
